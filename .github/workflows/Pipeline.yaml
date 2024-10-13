@@ -1,0 +1,46 @@
+name: Build and Push Microservices
+
+on:
+  push:
+    branches:
+      - main
+
+env:
+  DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+  DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+
+jobs:
+  build-and-push-microservices:
+    strategy:
+      matrix:
+        service: [service1, service2, service3, service4, service5]
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to DockerHub
+        run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Check if microservice has changed
+        id: changes
+        run: |
+          if git diff --name-only HEAD^ HEAD | grep -q "^${{ matrix.service }}/"; then
+            echo "files_changed=true" >> $GITHUB_ENV
+          else
+            echo "files_changed=false" >> $GITHUB_ENV
+
+      - name: Build and push Docker image if changed
+        if: env.files_changed == 'true'
+        run: |
+          cd ${{ matrix.service }}
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
+
+      - name: Logout of DockerHub
+        run: docker logout
