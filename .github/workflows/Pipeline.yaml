@@ -13,7 +13,7 @@ jobs:
   build-and-push-microservices:
     strategy:
       matrix:
-        service: [common-models, inventory-service, order-service, payment-service, product-service, user-service]
+        service: [order-service, payment-service]
 
     runs-on: ubuntu-latest
 
@@ -37,7 +37,7 @@ jobs:
           fi
 
       - name: Build and push Docker image if changed
-        if: env.files_changed == 'false'
+        if: env.files_changed == 'true'
         run: |
           cd services/${{ matrix.service }}
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest .
