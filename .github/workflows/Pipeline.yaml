@@ -30,9 +30,9 @@ jobs:
       with:
         context: ./services/order-service
         push: true
-        tags: jovan99djokic/order-service:${{ env.SHORT_SHA }}
+        tags: jovan99djokic/order-service:latest
         labels: |
-          org.opencontainers.image.revision=${{ env.SHORT_SHA }}
+          org.opencontainers.image.revision=latest
 
     - name: Log out from Docker Hub
       run: docker logout
