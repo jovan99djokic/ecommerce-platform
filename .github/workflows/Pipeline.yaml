@@ -37,7 +37,7 @@ jobs:
           fi
 
       - name: Build and push Docker image if changed
-        if: env.files_changed == 'true'
+        if: env.files_changed == 'false'
         run: |
           cd service/${{ matrix.service }}
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest .
