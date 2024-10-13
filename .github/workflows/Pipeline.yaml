@@ -32,7 +32,7 @@ jobs:
         push: true
         tags: jovan99djokic/order-service:latest
         labels: |
-          org.opencontainers.image.revision=latest
+          org.opencontainers.image.revision=${{ env.GITHUB_SHA }}
 
     - name: Log out from Docker Hub
       run: docker logout
