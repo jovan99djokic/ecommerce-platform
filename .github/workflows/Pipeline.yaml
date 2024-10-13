@@ -30,7 +30,7 @@ jobs:
       - name: Check if microservice has changed
         id: changes
         run: |
-          if git diff --name-only HEAD^ HEAD | grep -q "^service/${{ matrix.service }}/"; then
+          if git diff --name-only HEAD^ HEAD | grep -q "^services/${{ matrix.service }}/"; then
             echo "files_changed=true" >> $GITHUB_ENV
           else
             echo "files_changed=false" >> $GITHUB_ENV
@@ -39,7 +39,7 @@ jobs:
       - name: Build and push Docker image if changed
         if: env.files_changed == 'false'
         run: |
-          cd service/${{ matrix.service }}
+          cd services/${{ matrix.service }}
           docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest .
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ matrix.service }}:latest
 
