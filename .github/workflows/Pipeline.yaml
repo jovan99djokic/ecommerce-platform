@@ -34,7 +34,7 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - run: mvn --batch-mode --update-snapshots -f config/config-server/pom.xml verify
-    - run: mkdir staging && cp config/config-server/target/*.jar staging
+    - run: mkdir target && cp config/config-server/target/*.jar target
     - uses: actions/upload-artifact@v3
       with:
         name: Package
