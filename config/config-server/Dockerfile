@@ -5,7 +5,6 @@ FROM openjdk:17-jdk-slim
 WORKDIR /app
 
 # Copy the application's jar to the container
-COPY target/config-server-0.0.1-SNAPSHOT.jar /app/config-server.jar
 COPY ./target /target
 
 # Expose the port your Spring Boot app runs on
