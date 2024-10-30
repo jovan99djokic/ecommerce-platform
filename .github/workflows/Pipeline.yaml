@@ -60,7 +60,7 @@ jobs:
       # Build the Docker image
       - name: Build Docker Image
         run: |
-          docker build -t jovan99djokic/config-server:${{ github.sha }} -f config/config-server/Dockerfile .
+          docker build -t jovan99djokic/config-server:latest -f config/config-server/Dockerfile .
 
       # Log in to Docker Hub
       - name: Docker Hub Login
@@ -68,4 +68,4 @@ jobs:
 
       # Push the Docker image to Docker Hub
       - name: Push Docker Image
-        run: docker push jovan99djokic/config-server:${{ github.sha }}
+        run: docker push jovan99djokic/config-server:latest
