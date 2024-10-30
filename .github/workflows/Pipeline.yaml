@@ -38,7 +38,7 @@ jobs:
     - uses: actions/upload-artifact@v3
       with:
         name: Package
-        path: staging
+        path: target
 
 
   dockerize:
@@ -55,7 +55,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Package
-          path: staging
+          path: target
 
       # Build the Docker image
       - name: Build Docker Image
