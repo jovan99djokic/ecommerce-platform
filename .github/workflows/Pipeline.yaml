@@ -60,7 +60,7 @@ jobs:
       # Build the Docker image
       - name: Build Docker Image
         run: |
-          docker build -t jovan99djokic/config-server:latest -f config/config-server/Dockerfile .
+          docker build -t jovan99djokic/config-server:latest -f config/config-server/Dockerfile configs
 
       # Log in to Docker Hub
       - name: Docker Hub Login
