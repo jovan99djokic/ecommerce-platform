@@ -34,11 +34,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - run: mvn --batch-mode --update-snapshots -f config/config-server/pom.xml verify
-    - run: mkdir target && cp config/config-server/target/*.jar target
+    - run: mkdir configs && cp config/config-server/target/*.jar configs
     - uses: actions/upload-artifact@v3
       with:
         name: Package
-        path: target
+        path: configs
 
 
   dockerize:
@@ -55,7 +55,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Package
-          path: target
+          path: configs
 
       # Build the Docker image
       - name: Build Docker Image

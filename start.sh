@@ -40,7 +40,7 @@ build_maven_services() {
 run_docker_compose() {
   echo "Starting services with Docker Compose..."
   cd docker || { echo "Failed to enter docker directory"; exit 1; }
-  docker-compose up --build -d || { echo "Failed to start services with Docker Compose"; exit 1; }
+  docker compose up --build -d || { echo "Failed to start services with Docker Compose"; exit 1; }
 }
 
 # Main script execution
