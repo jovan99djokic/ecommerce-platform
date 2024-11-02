@@ -34,11 +34,11 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - run: mvn --batch-mode --update-snapshots -f config/config-server/pom.xml verify
-    - run: mkdir configs && cp config/config-server/target/*.jar configs
+    - run: mkdir target && cp config/config-server/target/*.jar target
     - uses: actions/upload-artifact@v3
       with:
         name: Package
-        path: configs
+        path: target
 
 
   dockerize:
@@ -55,12 +55,12 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: Package
-          path: configs
+          path: target
 
       # Build the Docker image
       - name: Build Docker Image
         run: |
-          docker build -t jovan99djokic/config-server:latest -f config/config-server/Dockerfile configs
+          docker build -t jovan99djokic/config-server:latest -f config/config-server/Dockerfile
 
       # Log in to Docker Hub
       - name: Docker Hub Login
