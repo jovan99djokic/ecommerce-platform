@@ -9,29 +9,32 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up JDK 17
-      uses: actions/setup-java@v3
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-        
-    - name: Build and Verify with Maven
-      run: |
-        mvn -B package --file config/config-server/pom.xml
-        mvn --batch-mode --update-snapshots -f config/config-server/pom.xml verify
-        
-    - name: Prepare JAR for Docker
-      run: mkdir target && cp config/config-server/target/*.jar target
-      
-    - name: Upload JAR Artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: config-server-jar
-        path: config/config-server/target/config-server-0.0.1-SNAPSHOT.jar
+      - uses: actions/checkout@v3
 
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
 
+      - name: Build and Verify with Maven
+        run: |
+          mvn -B package --file config/config-server/pom.xml
+          mvn --batch-mode --update-snapshots -f config/config-server/pom.xml verify
+
+      # Create a folder to store the JAR and configs for artifact upload
+      - name: Prepare JAR and Configs for Docker
+        run: |
+          mkdir -p deploy_artifact
+          cp config/config-server/target/config-server-0.0.1-SNAPSHOT.jar deploy_artifact/
+          cp -r configs deploy_artifact/
+
+      - name: Upload JAR and Configs as Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: config-server-package
+          path: deploy_artifact
 
   dockerize:
     runs-on: ubuntu-latest
@@ -42,14 +45,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Download the JAR artifact
-      - name: Download JAR Artifact
+      # Download the artifact (JAR and configs)
+      - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: config-server-jar
-          path: target/
+          name: config-server-package
+          path: deploy_artifact
 
-      # Build the Docker image
+      # Build the Docker image with the downloaded JAR and configs
       - name: Build Docker Image
         run: |
           docker build -t jovan99djokic/config-server:latest -f config/config-server/Dockerfile .
