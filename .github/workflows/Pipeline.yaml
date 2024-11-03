@@ -28,7 +28,7 @@ jobs:
         run: |
           mkdir -p deploy_artifact
           cp config/config-server/target/config-server-0.0.1-SNAPSHOT.jar deploy_artifact/
-          cp -r configs deploy_artifact/
+          cp -r config/config-server/configs deploy_artifact/
 
       - name: Upload JAR and Configs as Artifact
         uses: actions/upload-artifact@v3
