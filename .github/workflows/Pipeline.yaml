@@ -52,6 +52,9 @@ jobs:
           name: config-server-0.0.1-SNAPSHOT.jar
           path: target
 
+      - name: List all files
+        run: ls -R  # Lists all files in the repository
+
       # Build the Docker image with the downloaded JAR and configs
       - name: Build Docker Image
         run: |
