@@ -50,9 +50,10 @@ jobs:
           name: config-server-artifact
           path: deploy_artifact
 
-      # Move contents of deploy_artifact to the root directory for Docker build
+      # Create target directory and move the JAR and configs
       - name: Prepare Docker Build Context
         run: |
+          mkdir -p target  # Ensure target directory exists
           mv deploy_artifact/config-server-0.0.1-SNAPSHOT.jar ./target/
           mv deploy_artifact/configs ./
 
