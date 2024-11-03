@@ -53,7 +53,7 @@ jobs:
           path: target
 
       - name: List all files
-        run: ls -R  # Lists all files in the repository
+        run: mkdir configs && cp config/config-server/configs configs
 
       # Build the Docker image with the downloaded JAR and configs
       - name: Build Docker Image
