@@ -28,7 +28,6 @@ jobs:
         run: |
           mkdir -p deploy_artifact
           cp config/config-server/target/config-server-0.0.1-SNAPSHOT.jar deploy_artifact/
-          cp -R config/config-server/configs deploy_artifact/
 
       - name: Upload JAR and Configs as Artifact
         uses: actions/upload-artifact@v3
@@ -57,7 +56,7 @@ jobs:
         run: |
           mkdir -p target  # Ensure target directory exists
           mv deploy_artifact/config-server-0.0.1-SNAPSHOT.jar ./target/
-          mv deploy_artifact/configs .
+          mv config/config-server/configs .
 
       - name: List all files for debugging
         run: ls -R  # Lists all files to confirm configs and JAR placement
