@@ -28,42 +28,44 @@ jobs:
         run: |
           mkdir -p deploy_artifact
           cp config/config-server/target/config-server-0.0.1-SNAPSHOT.jar deploy_artifact/
+          cp -R config/config-server/configs deploy_artifact/
+
       - name: Upload JAR and Configs as Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: config-server-0.0.1-SNAPSHOT.jar
+          name: config-server-artifact
           path: deploy_artifact
-
-
 
   dockerize:
     runs-on: ubuntu-latest
     needs: build_and_publish
 
     steps:
-      # Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      # Download the artifact (JAR and configs)
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: config-server-0.0.1-SNAPSHOT.jar
-          path: target
+          name: config-server-artifact
+          path: deploy_artifact
 
-      - name: List all files
-        run: mkdir configs && cp config/config-server/configs configs
+      # Move contents of deploy_artifact to the root directory for Docker build
+      - name: Prepare Docker Build Context
+        run: |
+          mv deploy_artifact/config-server-0.0.1-SNAPSHOT.jar ./target/
+          mv deploy_artifact/configs ./
 
-      # Build the Docker image with the downloaded JAR and configs
+      - name: List all files for debugging
+        run: ls -R  # Lists all files to confirm configs and JAR placement
+
+      # Build the Docker image with the root directory as context
       - name: Build Docker Image
         run: |
           docker build -t jovan99djokic/config-server:latest -f config/config-server/Dockerfile .
 
-      # Log in to Docker Hub
       - name: Docker Hub Login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
-      # Push the Docker image to Docker Hub
       - name: Push Docker Image
         run: docker push jovan99djokic/config-server:latest
