@@ -75,6 +75,10 @@ jobs:
         run: |
           mkdir -p target  # Ensure target directory exists
           mv deploy_artifact_${{ matrix.service.name }}/${{ matrix.service.name }}-0.0.1-SNAPSHOT.jar ./target/
+
+      - name: Test to see if this is config-server
+        if: matrix.service.name == 'config-server'  # Run only for config-server
+        run: |
           mv deploy_artifact_${{ matrix.service.name }}/configs .
 
       - name: List all files for debugging
