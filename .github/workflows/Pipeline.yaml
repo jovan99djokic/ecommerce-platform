@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         service:
-          - config-server
-          - ../discovery/eureka-server
+          - config/config-server
+          - discovery/eureka-server
           # Add other services as needed
 
     steps:
@@ -26,15 +26,20 @@ jobs:
 
       - name: Build and Verify with Maven
         run: |
-          mvn -B package --file config/${{ matrix.service }}/pom.xml
-          mvn --batch-mode --update-snapshots -f config/${{ matrix.service }}/pom.xml verify
+          mvn -B package --file ${{ matrix.service }}/pom.xml
+          mvn --batch-mode --update-snapshots -f ${{ matrix.service }}/pom.xml verify
 
       # Create a folder to store the JAR and configs for artifact upload
       - name: Prepare JAR and Configs for Docker
         run: |
           mkdir -p deploy_artifact_${{ matrix.service }}
-          cp config/${{ matrix.service }}/target/${{ matrix.service }}-0.0.1-SNAPSHOT.jar deploy_artifact_${{ matrix.service }}/
-          cp -R config/${{ matrix.service }}/configs deploy_artifact_${{ matrix.service }}/
+          cp ${{ matrix.service }}/target/${{ matrix.service }}-0.0.1-SNAPSHOT.jar deploy_artifact_${{ matrix.service }}/
+
+      - name: Is this config-server
+        if: matrix.service == 'config-server'  # Run only for config-server
+        run: |
+          cp -R ${{ matrix.service }}/configs deploy_artifact_${{ matrix.service }}/
+      
 
       - name: Upload JAR and Configs as Artifact
         uses: actions/upload-artifact@v3
@@ -51,7 +56,7 @@ jobs:
       matrix:
         service:
           - config-server
-          - ../discovery/eureka-server
+          - discovery/eureka-server
           # Add other services as needed
 
     steps:
