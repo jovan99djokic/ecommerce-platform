@@ -36,7 +36,7 @@ jobs:
       - name: Prepare JAR and Configs for Docker
         run: |
           mkdir -p deploy_artifact_${{ matrix.service.name }}
-          cp ${{ matrix.service.path }}/target/${{ matrix.service.name }}-0.0.1-SNAPSHOT.jar deploy_artifact_${{ matrix.service.name }}/
+          cp ${{ matrix.service.path }}/target/*.jar deploy_artifact_${{ matrix.service.name }}/
 
       - name: Test to see if this is config-server
         if: matrix.service.name == 'config-server'  # Run only for config-server
@@ -78,7 +78,7 @@ jobs:
       - name: Prepare Docker Build Context
         run: |
           mkdir -p target  # Ensure target directory exists
-          mv deploy_artifact_${{ matrix.service.name }}/${{ matrix.service.name }}-0.0.1-SNAPSHOT.jar ./target/
+          mv deploy_artifact_${{ matrix.service.name }}/*.jar ./target/
 
       - name: Test to see if this is config-server
         if: matrix.service.name == 'config-server'  # Run only for config-server
