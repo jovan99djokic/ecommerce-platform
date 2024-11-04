@@ -10,9 +10,10 @@ jobs:
     strategy:
       matrix:
         service:
-          - config/config-server
-          - discovery/eureka-server
-          # Add other services as needed
+          - name: config-server
+            path: config/config-server
+          - name: eureka-server
+            path: discovery/eureka-server
 
     steps:
       - uses: actions/checkout@v3
@@ -34,12 +35,7 @@ jobs:
         run: |
           mkdir -p deploy_artifact_${{ matrix.service }}
           cp ${{ matrix.service }}/target/${{ matrix.service }}-0.0.1-SNAPSHOT.jar deploy_artifact_${{ matrix.service }}/
-
-      - name: Is this config-server
-        if: matrix.service == 'config-server'  # Run only for config-server
-        run: |
           cp -R ${{ matrix.service }}/configs deploy_artifact_${{ matrix.service }}/
-      
 
       - name: Upload JAR and Configs as Artifact
         uses: actions/upload-artifact@v3
@@ -56,7 +52,8 @@ jobs:
       matrix:
         service:
           - config-server
-          - discovery/eureka-server
+          - service-a
+          - service-b
           # Add other services as needed
 
     steps:
