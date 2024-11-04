@@ -7,6 +7,13 @@ on:
 jobs:
   build_and_publish:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        service:
+          - config/config-server
+          - discovery/eureka-server
+          - gateway/api-gateway
+          # Add other services as needed
 
     steps:
       - uses: actions/checkout@v3
@@ -20,26 +27,34 @@ jobs:
 
       - name: Build and Verify with Maven
         run: |
-          mvn -B package --file config/config-server/pom.xml
-          mvn --batch-mode --update-snapshots -f config/config-server/pom.xml verify
+          mvn -B package --file ${{ matrix.service }}/pom.xml
+          mvn --batch-mode --update-snapshots -f ${{ matrix.service }}/pom.xml verify
 
       # Create a folder to store the JAR and configs for artifact upload
       - name: Prepare JAR and Configs for Docker
         run: |
-          mkdir -p deploy_artifact
-          cp config/config-server/target/config-server-0.0.1-SNAPSHOT.jar deploy_artifact/
+          mkdir -p deploy_artifact_${{ matrix.service }}
+          cp ${{ matrix.service }}/target/${{ matrix.service }}-0.0.1-SNAPSHOT.jar deploy_artifact_${{ matrix.service }}/
+          cp -R ${{ matrix.service }}/configs deploy_artifact_${{ matrix.service }}/
 
       - name: Upload JAR and Configs as Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: config-server-artifact
-          path: deploy_artifact
+          name: ${{ matrix.service }}-artifact
+          path: deploy_artifact_${{ matrix.service }}
 
 
 
   dockerize:
     runs-on: ubuntu-latest
     needs: build_and_publish
+    strategy:
+      matrix:
+        service:
+          - config/config-server
+          - discovery/eureka-server
+          - gateway/api-gateway
+          # Add other services as needed
 
     steps:
       - name: Checkout repository
@@ -48,15 +63,15 @@ jobs:
       - name: Download Artifact
         uses: actions/download-artifact@v3
         with:
-          name: config-server-artifact
-          path: deploy_artifact
+          name: ${{ matrix.service }}-artifact
+          path: deploy_artifact_${{ matrix.service }}
 
       # Create target directory and move the JAR and configs
       - name: Prepare Docker Build Context
         run: |
           mkdir -p target  # Ensure target directory exists
-          mv deploy_artifact/config-server-0.0.1-SNAPSHOT.jar ./target/
-          mv config/config-server/configs .
+          mv deploy_artifact_${{ matrix.service }}/${{ matrix.service }}-0.0.1-SNAPSHOT.jar ./target/
+          mv deploy_artifact_${{ matrix.service }}/configs .
 
       - name: List all files for debugging
         run: ls -R  # Lists all files to confirm configs and JAR placement
@@ -64,10 +79,10 @@ jobs:
       # Build the Docker image with the root directory as context
       - name: Build Docker Image
         run: |
-          docker build -t jovan99djokic/config-server:latest -f config/config-server/Dockerfile .
+          docker build -t jovan99djokic/${{ matrix.service }}:latest -f ${{ matrix.service }}/Dockerfile .
 
       - name: Docker Hub Login
         run: echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
 
       - name: Push Docker Image
-        run: docker push jovan99djokic/config-server:latest
+        run: docker push jovan99djokic/${{ matrix.service }}:latest
