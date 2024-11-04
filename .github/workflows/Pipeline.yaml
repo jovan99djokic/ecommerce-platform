@@ -35,6 +35,10 @@ jobs:
         run: |
           mkdir -p deploy_artifact_${{ matrix.service.name }}
           cp ${{ matrix.service.path }}/target/${{ matrix.service.name }}-0.0.1-SNAPSHOT.jar deploy_artifact_${{ matrix.service.name }}/
+
+      - name: Test to see if this is config-server
+        if: matrix.service == 'config-server'  # Run only for config-server
+        run: |
           cp -R ${{ matrix.service.path }}/configs deploy_artifact_${{ matrix.service.name }}/
 
       - name: Upload JAR and Configs as Artifact
