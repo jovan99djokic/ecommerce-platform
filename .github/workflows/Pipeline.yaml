@@ -27,21 +27,21 @@ jobs:
 
       - name: Build and Verify with Maven
         run: |
-          mvn -B package --file ${{ matrix.service }}/pom.xml
-          mvn --batch-mode --update-snapshots -f ${{ matrix.service }}/pom.xml verify
+          mvn -B package --file ${{ matrix.service.path }}/pom.xml
+          mvn --batch-mode --update-snapshots -f ${{ matrix.service.path }}/pom.xml verify
 
       # Create a folder to store the JAR and configs for artifact upload
       - name: Prepare JAR and Configs for Docker
         run: |
-          mkdir -p deploy_artifact_${{ matrix.service }}
-          cp ${{ matrix.service }}/target/${{ matrix.service }}-0.0.1-SNAPSHOT.jar deploy_artifact_${{ matrix.service }}/
-          cp -R ${{ matrix.service }}/configs deploy_artifact_${{ matrix.service }}/
+          mkdir -p deploy_artifact_${{ matrix.service.name }}
+          cp ${{ matrix.service.path }}/target/${{ matrix.service.name }}-0.0.1-SNAPSHOT.jar deploy_artifact_${{ matrix.service.name }}/
+          cp -R ${{ matrix.service.path }}/configs deploy_artifact_${{ matrix.service.name }}/
 
       - name: Upload JAR and Configs as Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ matrix.service }}-artifact
-          path: deploy_artifact_${{ matrix.service }}
+          name: ${{ matrix.service.name }}-artifact
+          path: deploy_artifact_${{ matrix.service.name }}
 
 
 
