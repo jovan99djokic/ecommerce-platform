@@ -14,8 +14,6 @@ jobs:
             path: config/config-server
           - name: eureka-server
             path: discovery/eureka-server
-          - name: order-service
-            path: services/order-service
 
     steps:
       - uses: actions/checkout@v3
@@ -61,8 +59,6 @@ jobs:
             path: config/config-server
           - name: eureka-server
             path: discovery/eureka-server
-          - name: order-service
-            path: services/order-service
 
     steps:
       - name: Checkout repository
