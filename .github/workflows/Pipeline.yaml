@@ -16,8 +16,6 @@ jobs:
             path: discovery/eureka-server
           - name: api-gateway
             path: gateway/api-gateway
-          - name: order-service
-            path: services/order-service
 
     steps:
       - uses: actions/checkout@v3
@@ -65,8 +63,6 @@ jobs:
             path: discovery/eureka-server
           - name: api-gateway
             path: gateway/api-gateway
-          - name: order-service
-            path: services/order-service
 
     steps:
       - name: Checkout repository
