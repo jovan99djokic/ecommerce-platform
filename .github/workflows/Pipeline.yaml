@@ -66,7 +66,7 @@ jobs:
           - name: api-gateway
             path: gateway/api-gateway
           - name: order-service
-            path: service/order-service
+            path: services/order-service
 
     steps:
       - name: Checkout repository
