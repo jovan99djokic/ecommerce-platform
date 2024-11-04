@@ -14,8 +14,8 @@ jobs:
             path: config/config-server
           - name: eureka-server
             path: discovery/eureka-server
-          - name: common-models
-            path: services/common-models
+          - name: order-service
+            path: services/order-service
 
     steps:
       - uses: actions/checkout@v3
@@ -32,14 +32,14 @@ jobs:
           mvn -B package --file ${{ matrix.service.path }}/pom.xml
           mvn --batch-mode --update-snapshots -f ${{ matrix.service.path }}/pom.xml verify
 
-      # Create a folder to store the JAR and configs for artifact upload
+      
       - name: Prepare JAR and Configs for Docker
         run: |
           mkdir -p deploy_artifact_${{ matrix.service.name }}
           cp ${{ matrix.service.path }}/target/*.jar deploy_artifact_${{ matrix.service.name }}/
 
       - name: Test to see if this is config-server
-        if: matrix.service.name == 'config-server'  # Run only for config-server
+        if: matrix.service.name == 'config-server'  
         run: |
           cp -R ${{ matrix.service.path }}/configs deploy_artifact_${{ matrix.service.name }}/
 
@@ -61,8 +61,8 @@ jobs:
             path: config/config-server
           - name: eureka-server
             path: discovery/eureka-server
-          - name: common-models
-            path: services/common-models
+          - name: order-service
+            path: services/order-service
 
     steps:
       - name: Checkout repository
@@ -74,21 +74,28 @@ jobs:
           name: ${{ matrix.service.name }}-artifact
           path: deploy_artifact_${{ matrix.service.name }}
 
-      # Create target directory and move the JAR and configs
+      
       - name: Prepare Docker Build Context
         run: |
           mkdir -p target  # Ensure target directory exists
           mv deploy_artifact_${{ matrix.service.name }}/*.jar ./target/
 
       - name: Test to see if this is config-server
-        if: matrix.service.name == 'config-server'  # Run only for config-server
+        if: matrix.service.name == 'config-server'  
         run: |
           mv deploy_artifact_${{ matrix.service.name }}/configs .
 
-      - name: List all files for debugging
-        run: ls -R  # Lists all files to confirm configs and JAR placement
 
-      # Build the Docker image with the root directory as context
+      - name: Test to see if this is Services and build common models #Because i need to copy common-models into docker container to run service succesfully
+        if: matrix.service.name == 'inventory-service' || 'order-service' || 'payment-service' || 'product-service' || 'user-service'
+        run: |
+          mvn -B package --file ${{ matrix.service.path }}/pom.xml
+          mvn --batch-mode --update-snapshots -f ${{ matrix.service.path }}/pom.xml verify
+
+      - name: List all files for debugging
+        run: ls -R  
+
+      
       - name: Build Docker Image
         run: |
           docker build -t jovan99djokic/${{ matrix.service.name }}:latest -f ${{ matrix.service.path }}/Dockerfile .
