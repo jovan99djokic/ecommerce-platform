@@ -10,10 +10,9 @@ jobs:
     strategy:
       matrix:
         service:
-          - name: config-server
-            path: config/config-server
-          - name: eureka-server
-            path: discovery/eureka-server
+          - name: payment-service
+            path: services/payment-service
+
 
     steps:
       - uses: actions/checkout@v3
@@ -55,10 +54,8 @@ jobs:
     strategy:
       matrix:
         service:
-          - name: config-server
-            path: config/config-server
-          - name: eureka-server
-            path: discovery/eureka-server
+          - name: payment-service
+            path: services/payment-service
 
     steps:
       - name: Checkout repository
