@@ -27,6 +27,12 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
+      - name: Test to see if this is Services and build common models #Because i need to copy common-models into docker container to run service succesfully
+        if: matrix.service.name == 'inventory-service' || 'order-service' || 'payment-service' || 'product-service' || 'user-service'
+        run: |
+          mvn -B package --file ${{ matrix.service.path }}/pom.xml
+          mvn --batch-mode --update-snapshots -f ${{ matrix.service.path }}/pom.xml verify
+
       - name: Build and Verify with Maven
         run: |
           mvn -B package --file ${{ matrix.service.path }}/pom.xml
@@ -84,13 +90,6 @@ jobs:
         if: matrix.service.name == 'config-server'  
         run: |
           mv deploy_artifact_${{ matrix.service.name }}/configs .
-
-
-      - name: Test to see if this is Services and build common models #Because i need to copy common-models into docker container to run service succesfully
-        if: matrix.service.name == 'inventory-service' || 'order-service' || 'payment-service' || 'product-service' || 'user-service'
-        run: |
-          mvn -B package --file ${{ matrix.service.path }}/pom.xml
-          mvn --batch-mode --update-snapshots -f ${{ matrix.service.path }}/pom.xml verify
 
       - name: List all files for debugging
         run: ls -R  
